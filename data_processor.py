@@ -43,13 +43,16 @@ class ExtensionFields:
                 'extensionDisplayName': 'displayName',
                 'lastUpdated': 'lastUpdated',
                 'publishedDate': 'publishedDate',
-                'categories': 'categories',
                 'install': 'statistics_install',
                 'averagerating': 'statistics_averagerating',
                 'ratingcount': 'statistics_ratingcount',
                 'trendingdaily': 'statistics_trendingdaily',
                 'trendingmonthly': 'statistics_trendingmonthly',
                 'downloadCount': 'statistics_downloadCount',
+                'categories': 'categories',
+                'tags': 'tags',
+                'pricing': 'pricing',
+                'hasIcon': 'hasIcon'
             }
 
 
@@ -132,7 +135,7 @@ class ExtensionDataProcessor:
                          table_name: str = 'vscode_extensions') -> None:
         """Export CSV data to SQLite database."""
         try:
-            df = pd.read_csv(csv_file)
+            df = pd.read_csv(csv_file, low_memory=False)
 
             with sqlite3.connect(db_file) as conn:
                 df.to_sql(table_name, conn, if_exists='replace', index=False)

@@ -26,6 +26,19 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
+def extension_pricing(extension):
+    try:
+        for version in extension['versions']:
+            if 'properties' not in version:
+                continue
+            for prop in version['properties']:
+                if prop['key'] == 'Microsoft.VisualStudio.Services.Content.Pricing':
+                    return prop['value']
+
+    except KeyError:
+        return None
+
+
 @dataclass
 class MarketplaceConfig:
     """Configuration for VSCode Marketplace API."""
@@ -87,6 +100,10 @@ class MarketplaceCrawler:
         try:
             # Remove version information to reduce file size
             for extension in extensions:
+                extension_str = json.dumps(extension)
+                has_icon = 'Microsoft.VisualStudio.Services.Icons.Default' in extension_str
+                extension['hasIcon'] = has_icon
+                extension['pricing'] = extension_pricing(extension)
                 extension.pop('versions', None)
 
             output_path = os.path.join('extensions', f'{page}.json')
